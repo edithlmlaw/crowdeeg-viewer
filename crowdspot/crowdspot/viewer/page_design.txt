@@ -1,0 +1,36 @@
+Page 0: Instructions
+
+Sleep Spindle Identification
+
+You will be presented with windows of EEG data such as the one below. Your task is to identify patterns in the data known as Sleep Spindles. Your task is to identify exactly where the spindles begin and end by highlighting them. 
+
+What is a sleep spindle?
+
+An example of a sleep spindle and a K-complex is given below. K-complexes and sleep spindles are often close to each other.
+
+For the purpose of this task, we are defining a sleep spindle based on its shape speed, duration and height. <b> It is most important that the spindle stands out as being different from the surrounding EEG signal. </b>
+
+1. Shape of sleep spindles
+
+Sleep spindles are usually shaped sort of like a football or diamond lying on its side. Some deformation in the shape of the sleep spindle is OK (ie its ok if the spindle is tilted or bent in the middle). 
+
+Insert examples from our viewer here
+
+2. A sleep spindle is a group of waves that oscillate (go up and down) at approximately 12-16 cycles per second. The vertical lines are are 0.5 seconds apart, so you can estimate the speed of the wave by counting the peaks. Between 6-8 wave peaks in 0.5 seconds would be equal to 12-15 cycles per second. It is important the spindle appear as a burst of waves that are slightly faster than they waves around it.
+
+3. Duration of spindle
+Spindles are usually 0.5 to 1.0 seconds in length (duration), but can be as short as 0.4 seconds or as long as 5 seconds.
+
+How to annotate spindles:
+
+To create a bounding box around the spindles, you need to first pick from this menu to select how confident you in you selection.
+
+- Definitely: "I am sure that this is a spindle. It meets all of the criteria of shape, speed, duration, and height and is very distinct from the surrounding waves."
+- Probably: "I think that this is a spindle, but I am not completely sure because the criteria is not quite right. There are some imperfections in the spindle, but I still think that it is a sleep spindle."
+- Guessing: "I think this could be a spindle, but I am not positive. Two or more of the criteria are not perfect. It would be best to double check this."
+
+Next left click and highlight the spindle. Once you're finished press submit. If there are no spindles on the page, simply press submit without highlighting any spindles.
+
+Remember, you need to select the spindles precisely. You will only get paid if you do a careful job in selecting the spindles. We will double check some of your jobs to make sure that you select events that meet the criteria.
+
+The goal is to very accurately identify the spindles. Try as best you can to to identify where the spindle begins and ends. Quality is more important than quantity.

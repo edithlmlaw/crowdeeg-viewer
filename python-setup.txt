@@ -1,0 +1,27 @@
+To setup python on your development machine, I highly recommend using the Anaconda scientific python distribution: https://store.continuum.io/cshop/anaconda/
+
+Make sure you get python 2.x not python 3.x
+
+I recommend this over just using the python.org version, because without out it you will almost certainly encounter a package that refuses to build properly, and fixing that type of issue can be a hugely mind numbing. 
+
+Uninstall any and all versions of python that you currently have on your machine before starting on these instructions.
+
+To get started, install Anaconda from the link above. You can get the basic packages using:
+$ conda install numpy
+$ conda install scipy
+$ conda install django
+$ conda install psycopg2
+$ conda install pandas
+
+$ pip install docopt
+$ pip install fabric
+
+these instructions have not been tested on different platforms yet, so if you encounter import errors later in the process, clean up any missing dependencies by first trying:
+
+$ conda install [library name]
+
+then if conda returns a not found error, try:
+
+$ pip install [library name]
+
+Python's package management system pypi is insecure and frustrating, and sometimes libraries are listed under different names in the package index than the name they're called by in the source code. For example, we used to use MySQL as the database for this project and the python MySQL client is listed on pypi as 'mysql-python', while you import it under the name mySQLdb. A little bit of googling should be all that's required to resolve any such issues. 

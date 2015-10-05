@@ -1,0 +1,48 @@
+First of all I would like to apologize up front for the issues that you willl doubtlessly have following these instructions. I've only been working here for ~3.5 weeks and I've spent 2 weeks completely revamping this project, so naturally the docs and test cases aren't all updated yet. Email me at joshbradshaw11@gmail.com for help once you've gone through your usual troubleshooting routine.
+
+To setup this website:
+
+1. follow all of the instructions in python-setup.txt
+2. Install a local postgres server instance, this is what the annotation interface will use to store your annotations. Here at the crowdLab we all program on OSX so we use a binary installer called postgres.app
+3. Verify that your local postgres server has the same port and login information as given in settings.py. Modify settings.py if your local postgres instance has different default settings than ours
+4. navigate a terminal to the crowdspot directory and run
+
+$ python manage.py migrate
+
+this will automatically setup all of the requisite tables in the postgres database. 
+
+Next, run:
+
+python manage.py runserver
+
+This will start a simple HTTP server that has some debugging utilities built in. 
+
+now open a web browswer to: http://127.0.0.1:8000/expert/
+
+If everything worked correctly (doubtful!), then you should see three EEG traces, labelled FP1-A1, C3-A1, O1-A1. You should also be able to highlight features on the EEG traces by clicking and dragging over the traces, and you should be able to delete these annotations by double clicking on them.
+
+Data
+
+Currently the data that we're using comes from the DREAMS sleep spindles database: http://www.tcts.fpms.ac.be/~devuyst/Databases/DatabaseSpindles/
+
+The data storage pipeline for this webapp is a little bit clunky at this point. I wrote a parser for EDF files which resides in:
+
+eeg_processing/edfextract.py
+
+It parses the EDF into a small, filtered and down sampled CSV file. For the purposes of our work this is not nearly as bad as it might sound, because an 8 hour EEG only produces ~40mb of CSV data.
+
+To get you started I put some of these files in crowdspot/recordings
+
+I use this approach because we need our webapp to be able to handle hundreds of visitors at a time, and using the CSV format lets me use pandas, a super efficient parsing library on the Django side. It MIGHT be preferable to implement an EDF parser in pandas to do the parsing, filtering and downsampling as required, but the engineering effort required to get this working is large compared to the benefit to us, and I'm only here for a four month term, so I will likely leave that task as a todo item unless I'm forced to work with a dataset so large that it completely breaks these tools.
+
+To get some context about what I've been working on with this interface, and what I have planned for the future see mturk-notes.txt
+
+Limitations of this interface
+
+1. The biggest issue with this interface as it currently stands is that EEG traces can't run into one another as they do on say EDFbrowswer. This can be fixed by cleverly restructuring the Highcharts code, but this will significantly complicate the implementation of the annotation code, so I haven't bothered. As it stands the interface is fine for 3-5 channels
+
+2. The EEG data is transferred from the backend to the client using plaintext JSON over AJAX. This is acceptable for the ~100k transfers that we've been doing, but if you wanted to beef up the displayed sampling rate or add more channels than it would be advisable to switch to google protocol buffers or messagepack
+
+3. There isn't currently an easy way to jump to a specific time. This is trivial to fix and I will do it soon
+
+4. Window timescale is currently fixed on the annotation side and on the diplay side, this was a design error which intend to correct as soon as possible

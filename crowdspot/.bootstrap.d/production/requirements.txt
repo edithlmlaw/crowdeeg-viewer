@@ -1,0 +1,5 @@
+django==1.7.3
+fabric
+compass
+pillow
+pandas

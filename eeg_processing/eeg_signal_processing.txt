@@ -1,0 +1,51 @@
+Will Knowledge Transfer Meeting Agenda:
+1. Physical meaning of EEG, and the relationships between ECG, EMG and EEG.
+    i. Relative signal amplitude
+    ii. Discussion about the electronics used to record EEG, ECG and the differences between them.
+    iii. Basic demo of sleep spindles and the DREAMs database
+    iv. Basic overview of filter design -- and how it relates to: visual analysis of EEG and machine learning feature extraction
+    v. The most important properties of filters including: amplitude and phase characteristics on the decibel scale, s-plane zeros and poles
+    vi. Explanation of how to recognize noise in an EEG or ECG waveform.
+    vii. A very quick discussion about an automatic ECG classifier that I developed at SickKids
+
+Part one resources:
+    1. ECG instrumentation: INA333 Datasheet Page 15: http://www.ti.com/lit/ds/symlink/ina333.pdf (skim)
+    2. EEG electrode positioning manual: https://www.trans-cranial.com/local/manuals/10_20_pos_man_v1_0_pdf.pdf (skim)
+    3. The Art of Electronics: Chapters: Introduction && Active Filter Design (ignore the circuit design sections) (read)
+    4. AASM Manual for the Scoring of Sleep and Associated Events 1st edn. http://www.nswo.nl/userfiles/files/AASM%20-%20Manual%20for%20the%20Scoring%20ofSleep%20and%20Associted%20Events%20-%2005-2007_2.pdf (skim, but consult as needed)
+    5. Lathi Linear Systems and Signals: http://www.amazon.com/Linear-Systems-Signals-2nd-Edition/dp/0195158334
+
+2. Interface Design - Expert interface for Neurologists and Novice Interface for Mechanical Turk
+    i. The overall layout of the codebase and how I hope to reorganize it
+    ii. The new data EEG database that I just finished building
+    iii. My new very sleek EDF processing tool, and my plans to make a web version
+
+    Expert interface specific:
+        i. How I plan to adapt the interface to make it work better for neurologists based on my meeting with Andrew Lim
+        ii. The design features that other EEG interfaces have that ours does not
+
+    Novice interface specific:
+    i. My goals for the novice interface, including tutorial and single channel testing
+    ii. My design mockups
+
+Part two resources:
+    1. My emails chain with Andrew Lim
+    2. My design sketches (they're mostly on paper now)
+    3. The physionet ECG viewer (the interface is slightly dated, but they have much better waveform display than we do) LIGHTWAVE: http://physionet.org/lightwave/?db=challenge/2013/set-a
+    4. Javascript files: annotator.js and eegdata.js under web/crowdspot/crowdspot/annotation/static/annotation/
+    5. Python files: views.py
+
+3. Ethics application and my future work
+    i. The tutorial I'm designing
+    ii. The sleep spindle indentification experiment on mechanical turk
+    iii. Our plans to have experts annotate EEG and give us their thoughs on how to deal with ambiguous cases
+    iv. What the ORE has, and what it is currently missing
+
+Part three resources:
+    1. Nature methods: sleep spindle detection: http://www.nature.com/nmeth/journal/v11/n4/full/nmeth.2855.html
+    2. Conducting behavioural research on mechanical turk: http://link.springer.com/article/10.3758%2Fs13428-011-0124-6
+
+4. Scheduling
+    i. Mechanical turk experiment - approx one month form now
+    ii. Ethics -- end of this week
+    iii. EDF online tool, improvements to expert interface -- Perhaps Will can pick one and take it on this month?

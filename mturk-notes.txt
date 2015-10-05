@@ -1,0 +1,47 @@
+Josh - Before Meeting Notes
+
+Last week:
+- Finished reworking data model. I found a very efficient way to store the EEG waveforms on disk and access it much faster.
+- Migrated from MySQL to PostgreSQL, because the never versions of Django have much better support for Postgres
+- Reworked annotation data model
+- Extensively tested and fixed several bugs in the code that writes annotations to the database
+- Made improvements to the EEG viewer based on Dr. Andrew Lim's suggestions and comparision with EDFbrowser including:
+	- Displaying 3 channels for expert analysis as opposed to 6
+	- Fixed vertical scaling as opposed to continuous rescaling to fit the data
+	- Finer line, with higher fidelity (more data points plotted)
+	- A new filtering scheme that more closely mimics the way waveforms appear on Dr. Lim's viewer
+	- Fixed up the CSS to make the display scale nicely to different displays, an important consideration with Mturk
+	- Completely reworked axis labels to display time and voltage the way commercial packages do
+
+Further work that can be done on the EEG viewer in order of precendence:
+- Add timescale options (sleep spindle task uses 20s or 30s windows, seizure spike uses 5s or 10s)
+- Rework the EDF parser to be more efficient (so that it can unpack really long recordings without temporarily consuming many gigbytes with temporary files)
+- Rework the plot display so that it can scale to 25 channels (right now the limit is approx 8, for visual reasons). 25 channels will be required for the seizure spike task
+- use a compressed numerical format for sending data from the server to the webapp such as messagepack (right now the advantage would be minimal, but this could be very beneficial when we add channels)
+
+Tutorial:
+- A non-interactive tutorial may not be the right approach on mechanical turk, because these workers are heavily incentivized to work quickly. 
+- Having altruisic volunteers do a slower more thorough tutorial makes sense, because they aren't incentivised to rush. It would definitely be worth making such a tutorial for Curio.
+
+Experiment task
+- possibilities include:
+	- is this a spindle (yes/no)?
+	- Click on the spindle (choosing from 3-4 boxes)
+	- Highlight the spindle (algorithm judges how well they did, could be trickly)
+	- Place a fixed size box over the spindle
+	- Place a mark anywhere on the spindle
+- need to consider the mathematical model
+- I think that its important that we provide feedback throughout the task, to help the participant learn continuously
+
+
+Possible teaching strategies:
+1. task: drag a fixed sized box over the sleep spindle
+   feedback: where the correct annotation is
+
+2. task: choose the best spindle candidate from potential spindles
+   feedback: the correct answer, and a justification for that answer based on the decision tree criteria (shape, duration, surroundings ect.) 
+
+3. task: evaulate an identified spindle to determine whether or not it 
+   meets the stated criteria
+   feedback: a gold standard evaluation?
+

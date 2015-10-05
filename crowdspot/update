@@ -1,0 +1,124 @@
+#! /bin/bash
+
+# This project name must be identical to the Django project name.
+PROJECT_NAME="crowdspot"
+
+usage () {
+    echo "Usage: update [development|testing|production]"
+}
+
+install_virtualenvwrapper() {
+    echo "Setting up virtualenvwrapper..."
+    sudo pip install virtualenvwrapper
+
+    # Detects profile file.
+    if [ -f $HOME/.zshrc ];
+    then
+        PROFILE=".zshrc"
+    else
+        if [ -f $HOME/.bashrc ];
+        then
+            PROFILE=".bashrc"
+        else
+            PROFILE=".bash_profile"
+        fi
+    fi
+
+
+    # Adds virtualenvwrapper variables to .bash_profile
+    echo "" >> $HOME/$PROFILE
+    echo "export WORKON_HOME=\$HOME/.virtualenvs" >> $HOME/$PROFILE
+    vWrapFile=`which virtualenvwrapper.sh`
+    echo ". $vWrapFile" >> $HOME/$PROFILE
+    . $HOME/$PROFILE
+
+    echo "Done."
+}
+
+check_dependencies() {
+    # make sure python is installed
+    command -v python >/dev/null 2>&1 || { echo >&2 "Python doesn't appear to be installed. Please install Python, then run this script again."; exit 1; }
+
+    # make sure pip is installed
+    command -v pip >/dev/null 2>&1 || { echo >&2 "Pip doesn't appear to be installed. Please install Pip (likely with 'sudo easy_install pip', then run this script again."; exit 1; }
+
+    if [ $environment == "development" ]
+    then
+        # make sure git is installed
+        command -v git >/dev/null 2>&1 || { echo >&2 "Git doesn't appear to be installed. Please install Git, then run this script again."; exit 1; }
+    fi
+}
+
+update_development () {
+    check_dependencies
+
+    # make sure virtualenvwrapper is installed
+    type virtualenvwrapper.sh >/dev/null 2>&1 || { echo >&2 "Virtualenvwrapper not installed."; install_virtualenvwrapper; }
+    vWrapFile=`which virtualenvwrapper.sh`
+    echo "sourcing $vWrapFile..."
+    . $vWrapFile
+    type mkvirtualenv >/dev/null 2>&1 || { echo >&2 "Virtualenvwrapper still not found."; exit 1; } 
+
+    echo "Activating virtual environment \"$PROJECT_NAME\"..."
+    workon $PROJECT_NAME
+    echo "Done."
+
+    echo "Installing requirements..."
+    pip install -r ./.bootstrap.d/development/requirements.txt
+    echo "Done."
+}
+
+update_server() {
+    check_dependencies
+
+    type virtualenv >/dev/null 2>&1 || { echo >&2 "It seems that virtualenv is not installed. Please install it and run this script again."; exit 1; }
+
+    echo "Creating virtual environment \"env\"..."
+    virtualenv env
+    echo "Done."
+
+    echo "Activating virtual environment \"env\"..."
+    . env/bin/activate
+    echo "Done."
+
+    echo "Installing distribute..."
+    easy_install -U distribute
+    echo "Done."
+
+    bootstrap_directory="./.bootstrap.d/$environment"
+
+    echo "Installing requirements..."
+    pip install -r $bootstrap_directory/requirements.txt
+    echo "Done."
+}
+
+update_production () {
+    update_server
+}
+
+update_testing () {
+    update_server
+}
+
+environment="$1"
+
+case "$1" in
+    "development")
+        echo "Updating development environment..."
+        update_development
+        ;;
+    "testing")
+        echo "Updating testing environment..."
+        update_testing
+        ;;
+    "production")
+        echo "Updating production environment..."
+        update_production
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
+
+exit 0
