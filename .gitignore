@@ -10,7 +10,6 @@
 *.xlk
 
 *.pyc
-logs
 *.DS_Store
 .DS_Store
 EEG_data/
@@ -18,7 +17,6 @@ EEG_data/
 __pycache__/
 *.py[cod]
 *$py.class
-recordings/
 
 # C extensions
 *.so
@@ -65,12 +63,9 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
 
 # Sphinx documentation
 docs/_build/
 
 # PyBuilder
 target/
-*.log
