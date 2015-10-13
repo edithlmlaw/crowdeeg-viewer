@@ -11,13 +11,38 @@ $ python manage.py migrate
 
 this will automatically setup all of the requisite tables in the postgres database. 
 
+Mechanical Turk Mode
+
+Mechanical turk mode is served to all users of this site who are not superusers. At the moment, mechanical turk mode is configured to teach users how to identify sleep spindles in EEG. Mechanical turk mode is included in this open-source release to provide examples of how you can build on top of the crowdEEG viewer to create interesting applications.
+
+User Accounts
+
+To create a superuser account, which will be served the expert view:
+
+run 
+
+>>> python manage.py shell
+>>> from django.contrib.auth.models import User
+>>> user=User.objects.create_user('expert', password='crowdEEG')
+>>> user.is_superuser=True
+>>> user.save()
+
+To create a mechanical turk account, which will be served the expert view:
+
+run 
+
+>>> python manage.py shell
+>>> from django.contrib.auth.models import User
+>>> user=User.objects.create_user('josh', password='crowdEEG')
+>>> user.save()
+
 Next, run:
 
 python manage.py runserver
 
 This will start a simple HTTP server that has some debugging utilities built in. 
 
-now open a web browswer to: http://127.0.0.1:8000/expert/
+now open a web browswer to: http://127.0.0.1:8000/viewer/
 
 If everything worked correctly (doubtful!), then you should see three EEG traces, labelled FP1-A1, C3-A1, O1-A1. You should also be able to highlight features on the EEG traces by clicking and dragging over the traces, and you should be able to delete these annotations by double clicking on them.
 

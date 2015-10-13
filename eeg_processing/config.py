@@ -3,9 +3,9 @@ from collections import OrderedDict
 edf_profiles = {
     'DREAMS': OrderedDict([
         ('Time', 'time'),
-        ('8', 'FP1-A1'),
-        ('7', 'C3-A1'), # one channel is enough for MTURK!
-        ('1', 'O1-A1'),
+        #('8', 'FP1-A1'),
+        ('3', 'CZ-A1'), # one channel is enough for MTURK!
+        #('1', 'O1-A1'),
     ])
 }
 

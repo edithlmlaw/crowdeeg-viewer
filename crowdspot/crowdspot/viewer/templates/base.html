@@ -1,0 +1,15 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}{% endblock title %} | CrowdSpot </title>
+  {% include 'base_includes.html' %}
+</head>
+
+<body>
+  {% block interface %} {% endblock interface %}
+  {% block local_script %}{% endblock local_script %}
+</body>
+</html>

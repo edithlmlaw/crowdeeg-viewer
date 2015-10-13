@@ -84,7 +84,7 @@ def get_downsample_ratio(sample_rate):
     web interface. we want the downsampling ratio to be an even divisor of the 
     sample_rate so that each window has an equal number of points
     """
-    for final_sample_rate in xrange(40, 80):
+    for final_sample_rate in xrange(41, 80):
         if sample_rate % final_sample_rate == 0:
             logging.debug("final sample rate should be: {}".format(final_sample_rate))
             return sample_rate / final_sample_rate
