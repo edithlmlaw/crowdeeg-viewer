@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}
+  Expert Sleep Spindle Task
+{% endblock title %}
+
+{% block local_script %}
+    <script type="text/javascript" src="{% static 'viewer/js/consent.js' %}"></script>
+{% endblock local_script %}
+
+{% block interface %}
+    
+    <div id="panel_container">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">crowdEEG Experiment</h3>
+          </div>
+          <div class="panel-body">
+            Welcome to the crowdEEG experiment. This experiment is designed to evaluate how quickly non-experts can learn to identify sleep spindles in EEG when provided with examples and feedback.
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Participant Consent Agreement</h3>
+          </div>
+          <div class="panel-body">
+            TODO: Write some legalese in here after I actually get ethical approval...
+          </div>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input id="ethics-agreement" type="checkbox" value="">
+            I understand and accept the participant consent agreement
+          </label>
+        </div>
+
+        <button type="button" class="btn btn-default" disabled="true" id="start-task" aria-label="Left Align">
+          Start Task
+        </button>
+    </div>
+
+    
+{% endblock interface %}

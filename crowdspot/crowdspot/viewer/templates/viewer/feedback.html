@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}
+  Expert Sleep Spindle Task
+{% endblock title %}
+
+{% block local_script %}
+    <script type="text/javascript" src="{% static 'viewer/js/consent.js' %}"></script>
+{% endblock local_script %}
+
+{% block interface %}
+    
+    <div id="panel_container">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">crowdEEG Experiment</h3>
+          </div>
+          <div class="panel-body">
+            Thank you for completing the task. If you have any feedback about this task, please email joshbradshaw11@gmail.com
+          </div>
+        </div>
+    </div>
+
+    
+{% endblock interface %}

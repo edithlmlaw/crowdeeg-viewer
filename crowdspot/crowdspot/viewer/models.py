@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # the model needs to be changed to store classification (there are 5 classes: N1,N2,N3,REM,Awake) in a separate
 # table from the feature annotations (e.g., sleep spindle, K-complexes)
@@ -9,11 +10,16 @@ class Annotator(models.Model):
     username = models.CharField(max_length=255)
     category = models.CharField(max_length=255) # Ex. Neurologist, mechanical turker
     score = models.IntegerField(default=0)
-    current_page = models.PositiveIntegerField(default=0)
+    current_page_start = models.PositiveIntegerField(default=0) # pages start with int number of seconds
+    current_recording = models.CharField(max_length=255, default="")
 
 class Recording(models.Model):
     """The EEG file under analysis"""
     name = models.CharField(max_length=255)
+
+class Turker(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    task_type = models.CharField(max_length=255)
 
 class Feature(models.Model):
     """highlighted features on the EEG waveform, such as sleep spindles and k-complexes"""

@@ -5,15 +5,18 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}, name='login'),
-    url(r'logout/$', 'django.contrib.auth.views.logout', name='logout'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/consent/'}, name='logout'),
+    url(r'^feedback/$', 'crowdspot.viewer.views.feedback', name='feedback'),
 
+    url(r'^consent/$', 'crowdspot.viewer.views.consentForm', name='consent'),
     url(r'^eegdata/(?P<recording>[\w0-9]+)/(?P<start_time>\d+)/(?P<window_length>\d+)/', 'crowdspot.viewer.views.getEEGData'),
-    
+    url(r'^users/getProgress', 'crowdspot.viewer.views.getUserStatus', name='userProgress'),
+
     # strictly for development purposes
-    url(r'^viewer/$', 'crowdspot.viewer.views.expert', name='viewer'),
-    url(r'^viewer/addfeature$', 'crowdspot.viewer.views.expertaddfeature', name='expertaddfeature'),
+    url(r'^viewer/$', 'crowdspot.viewer.views.viewer', name='viewer'),
+    url(r'^viewer/addfeature$', 'crowdspot.viewer.views.saveFeature', name='saveFeature'),
     url(r'^viewer/deletefeature$', 'crowdspot.viewer.views.deleteFeature', name='deleteFeature'),
-    url(r'^viewer/getannotations/(?P<recording_name>([\w_]+))/(?P<window_start>(\d+))/(?P<window_end>(\d+))/$', 'crowdspot.viewer.views.getAnnotations', name='getAnnotations'),
+    url(r'^viewer/getannotations$', 'crowdspot.viewer.views.getAnnotations', name='getAnnotations'),
 
     url(r'^$', 'crowdspot.viewer.views.index', name='index'),
 )

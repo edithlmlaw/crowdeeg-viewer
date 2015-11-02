@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(max_length=255)),
                 ('category', models.CharField(max_length=255)),
                 ('score', models.IntegerField(default=0)),
-                ('current_page', models.PositiveIntegerField(default=0)),
+                ('current_page_start', models.PositiveIntegerField(default=0)),
+                ('current_recording', models.CharField(default=b'', max_length=255)),
             ],
         ),
         migrations.CreateModel(

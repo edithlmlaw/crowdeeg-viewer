@@ -6,72 +6,53 @@ $.widget('crowdspot.annotator', {
         width: 1200,
         marginTop: 5,
         marginBottom: 20,
-        marginLeft: 75,
-        marginRight: 40,
-        x_interval: 20,
-        recording: 'excerpt1_50',
+        marginLeft: 65, // space for the last HH:MM:SS label
+        marginRight: 22, // space for the channel names
         xMin: 0,
+        xMax: 20,
+        x_interval: 20,
         feature_type: 0,
         colors: {
-            'Spindle': 'rgba(86,186,219,.5)',
+            'Spindle': 'rgba(86,186,219,.5)', // blue // rgba(224,27,47,.42)
+        },
+        answer_colors: {
+            'Spindle': 'rgba(0,0,0,.3)', // black
         },
         charts: [],
+        active_plotbands: [],
+        answerDisplayed: false,
     },
 
     options: {
         start_time: 0,
+        end_time: null, // if null defaults to end of recording, must be set for progress bar
+        recording: 'excerpt1_50',
         classes: [], // sleep stages
         features: ['Spindle'],
-        classification_enabled: true,
-        feature_selection_enabled: true,
-        navigation_enabled: true,
-        load_prev_annoations: true
+        feature_selection_enabled: true, // users are able 
+        navigation_enabled: false,
+        progress_bar_enabled: false,
+        load_prev_annotations: true,
+
+        // mechanical turk specific options:
+        mturk_mode: false, // changes the navigation over to mTurk style
+        answer_display: false, // displays the answer after each window is complete
     },
 
     _create: function() {
-        // !!! JAB redundant: remove
-        this._setup();
-    },
-
-    _setup: function() {
-        this._setupController(); // display the buttons above graph
-        this._setupGraph(); 
-
-    },
-
-    _setupController: function() {
-        this.element.append("<div id='graph_control'></div>");
-        this._setupClassificationPanel();
-        this._setupFeaturePanel();
-        this._setupNavigationPanel();
-    },
-
-    _setupClassificationPanel: function() {
-        /* Display the sleep stage selection buttons */
-        if (this.options.classification_enabled) {
-            var that = this;
-            $('#graph_control').append("<div id='classification_panel' class='btn-group' role='group' aria-label='...''></div>");
-            for (var i = 0; i < this.options.classes.length; i++) {
-                var class_name = this.options.classes[i];
-                $('#classification_panel').append("<button type='button' class='btn btn-default classification' id='" + class_name + "'>" + class_name + "</button>");
-            }
-            $('.classification').click(function(event) {
-                var className = event.target.innerHTML;
-                $(this).addClass('active');
-                $(this).siblings().removeClass('active');
-                var chart = that.vars.charts[0];
-                that._saveClassfication(className, chart.xAxis[0].min, chart.xAxis[0].max, 1.0, 1);
-            });
-        }
+        /* This is the constructor that jQuery calls, runs first */
+        var that = this;
+        that._setupFeaturePanel(); // setup and display the feature highlight buttons
+        that._setupNavigationPanel(); // setup the navigation system
+        that._getUserProgress(); // jump to wherever user left off (essential for page refreshes)
     },
 
     _setupFeaturePanel: function() {
-        /* Display the K-complex and Spindle highlight buttons */ 
+        /* Display the K-complex and Spindle highlight buttons */
         var that = this;
         var firstFeature = this.options.features[0];
-        this.vars.feature_type = firstFeature;
+        that.vars.feature_type = firstFeature;
         if (this.options.feature_selection_enabled) {
-            $('#graph_control').append("<div id='feature_panel' class='btn-group' role='group' aria-label='...''></div>");
             for (var i = 0; i < this.options.features.length; i++) {
                 var feature_name = this.options.features[i];
                 $('#feature_panel').append("<button type='button' class='btn btn-default feature' id='" + feature_name + "'>" + feature_name + "</button>");
@@ -91,51 +72,134 @@ $.widget('crowdspot.annotator', {
     _setupNavigationPanel: function() {
         /* Display the arrow buttons used to skip forward and backward through the EEG */
         var that = this;
-        $('#graph_control').append("<div id='navigation_panel'></div>");
-
+        var FORWARD = true;
+        var BACKWARD = false;
+        var FFW_WINDOWS = 5; // number of windows to skip in fast forward mode
         // navigation will be disabled for some of the mechanical turk experiments
-        if (this.options.navigation_enabled) {
-            $('#navigation_panel').append("<button type='button' class='btn btn-default' id='backward' aria-label='Left Align'><span class='glyphicon glyphicon-step-backward' aria-hidden='true'></span></button>");
-            $('#navigation_panel').append("<button type='button' class='btn btn-default' id='forward' aria-label='Left Align'><span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span></button>");
-            
+        if (that.options.navigation_enabled) {
+
             $('#forward').click(function() {
-                /* move one window forwards */
-                var chart = that.vars.charts[0];
-                // TODO: this._saveClassfication("N1", chart.xAxis[0].min, chart.xAxis[0].max, 1.0, 1);
-                var min = chart.xAxis[0].min + that.vars.x_interval;
-                var max = chart.xAxis[0].max + that.vars.x_interval;
-                that.vars.xMin = min;
-                that._loadData();
+                /* move one window forward */
+                that._shiftChart(FORWARD, 1);
             });
 
             $('#backward').click(function() {
-                /* move one window backwards */
-                var chart = that.vars.charts[0];
-                var min = chart.xAxis[0].min - that.vars.x_interval < 0 ? 0 : chart.xAxis[0].min - that.vars.x_interval;
-                var max = min == 0 ? that.vars.x_interval : chart.xAxis[0].max - that.vars.x_interval;
-                that.vars.xMin = min;
-                that._loadData();
+                /* move one window backward */
+                that._shiftChart(BACKWARD, 1);
+            });
+
+            $('#fastForward').click(function() {
+                /* skip forward by the number of windows specified in FFW_WINDOWS */
+                that._shiftChart(FORWARD, FFW_WINDOWS);
+            });
+
+            $('#fastBackward').click(function() {
+                /* skip backward by the number of windows specified in FFW_WINDOWS */
+                that._shiftChart(BACKWARD, FFW_WINDOWS);
             });
         }
+
+        if (that.options.mturk_mode) {
+            $('#nextWindow').prop('disabled', true);
+
+            $('#nextWindow').click(function() {
+                that._shiftChart(nextWindow, 1);
+                $('#notification').remove();
+                $('#nextWindow').prop('disabled', true);
+                that.vars.answerDisplayed = false;
+                var chart = that.vars.charts[0];
+                if (chart.xAxis[0].min + that.vars.x_interval > that.options.end_time) {
+                    window.location.replace("/feedback/")
+                }
+            });
+
+            $('#noSpindles').click(function() {
+                /* move one window forwards */
+                var chart = that.vars.charts[0];
+                if (that.options.answer_display) {
+                    that._getAnnotations(chart.xAxis[0].min, chart.xAxis[0].max, true);
+                    that.vars.answerDisplayed = true;
+                }
+            });
+
+            $('#submit').click(function() {
+                /* display the answer, and enable the nextWindow button */
+                var chart = that.vars.charts[0];
+
+                if (that.options.answer_display) {
+                    that._getAnnotations(chart.xAxis[0].min, chart.xAxis[0].max, true);
+                    that.vars.answerDisplayed = true;
+                }
+            });
+        }
+
+        $('#logout').click(function() {
+            window.location.replace("/logout/")
+        });
     },
 
-    _setupGraph: function() {
-        /* this should probably be generalized */
-        this.vars.xMin = this.options.start_time;
-        this.element.append("<div id='graph'></div>");
-        this._loadData();
+    _shiftChart: function(forward, num_windows) {
+        /* Advance or reverse through the time series by num_windows */
+        var that = this;
+        var chart = that.vars.charts[0];
+        if (forward) {
+            var min = chart.xAxis[0].min + that.vars.x_interval * num_windows;
+        } else {
+            var min = chart.xAxis[0].min - that.vars.x_interval * num_windows;
+        }
+
+        that.vars.xMin = min;
+        that.vars.xMax = min + that.vars.x_interval;
+        that._loadData();
+    },
+
+    _getUserProgress: function() {
+        /* sets viewer start time to the start of the window that the user 
+        viewed during last session. Without this, the viewer would drop
+        you on the first window after a page reset or logout */
+        var that = this;
+        $.ajax({
+            dataType: "json",
+            url: "/users/getProgress",
+            success: function(progress_data) {
+                if (progress_data.recording) {
+                    that.options.recording = progress_data.recording;
+                }
+                if (progress_data.start_time) {
+                    that.vars.xMin = progress_data.start_time;
+                } else {
+                    // user's first time logging in, start them at the start
+                    that.vars.xMin = that.options.start_time;
+                }
+                that._loadData();
+            }
+        });
+    },
+
+    _updateProgressBar: function() {
+        /* check what window the user is on and advance filled in portion of the progress bar */
+        var that = this;
+        var progress = (that.vars.xMin - that.options.start_time) / parseFloat(that.options.end_time - that.options.start_time) * 100;
+        $('#progress_bar').css({'width': parseInt(progress) + '%'});
     },
 
     _loadData: function() {
         /* Gets the relevant section from the EEG csv files and displays it on the chart
-        see also: eegdata.js 
-        */
+        see also: eegdata.js */
         var that = this;
-        eegDataLoader.request(this.vars.recording, that.vars.xMin, that.vars.x_interval,
+        // remove any notifications that may have been displayed on the prev window
+        eegDataLoader.request(this.options.recording, that.vars.xMin, that.vars.x_interval,
             function(eeg_data, channels) {
                 that._populateGraph(eeg_data, channels);
             }
         );
+        if (that.options.progress_bar_enabled) {
+            that._updateProgressBar()
+        } else {
+            // progress bar exists in the DOM, but is not displayed
+            // this may be a questionable design choice
+            $('#progress').remove();
+        }
     },
 
     _populateGraph: function(data, channels) {
@@ -149,20 +213,22 @@ $.widget('crowdspot.annotator', {
             $('#graph').append("<div id='" + data[i].name + "' style='margin: 0 auto'></div>");
             that.vars.charts[i] = new Highcharts.Chart({
                 chart: {
+                    animation: false,
                     marginRight: 100,
                     renderTo: data[i].name,
                     height: 200,
-                    width: that._getchartWidth(),
                     marginTop: that.vars.marginTop,
                     marginBottom: that.vars.marginBottom,
                     marginLeft: that.vars.marginLeft,
                     marginRight: that.vars.marginRight,
                     events: {
                         selection: function(event) {
-                            console.log('selection');
-                            var xMin = event.xAxis[0].min;
-                            var xMax = event.xAxis[0].max;
-                            return that._selectRegion(this, xMin, xMax, that.vars.feature_type, true);
+                            if (!that.vars.answerDisplayed) {
+                                var xMin = event.xAxis[0].min;
+                                var xMax = event.xAxis[0].max;
+                                that._selectRegion(this, xMin, xMax, that.vars.feature_type, true);
+                            }
+                            return false; // otherwise the chart will zoom                    
                         }
                     },
                     zoomType: 'x', // needed for selection to work!, do not remove
@@ -178,9 +244,10 @@ $.widget('crowdspot.annotator', {
                 },
                 plotOptions: {
                     series: {
+                        animation: false,
                         turboThreshold: 0,
                         lineWidth: 1,
-                        enableMouseTracking: false,
+                        enableMouseTracking: false, // annoying for this task
                         color: 'black'
                     },
                     line: {
@@ -194,9 +261,10 @@ $.widget('crowdspot.annotator', {
                     labels: {
                         crop: false,
                         // only show x axis labels on the bottom chart
-                        enabled: i==channels.length -1,
+                        enabled: i == channels.length - 1,
                         step: 5,
-                        formatter: function() { // display time as HH:MM:SS
+                        formatter: function() {
+                            /* Display time as HH:MM:SS */
                             var s = this.value;
                             var h = Math.floor(s / 3600); //Get whole hours
                             s -= h * 3600;
@@ -223,7 +291,7 @@ $.widget('crowdspot.annotator', {
                         text: data[i].name
                     },
                     labels: {
-                        enabled: true
+                        enabled: !that.options.mturk_mode, // experts care about y-scaling, turkers don't
                     }
                 },
                 legend: {
@@ -238,79 +306,99 @@ $.widget('crowdspot.annotator', {
             });
         }
 
-        if (that.options.load_prev_annoations) {
+        if (that.options.load_prev_annotations) {
             var chart = that.vars.charts[0];
-            that._getAnnotations(chart.xAxis[0].min, chart.xAxis[0].max);
+            // use the chart start/end so that data and annotations can never 
+            // get out of synch
+            that._getAnnotations(chart.xAxis[0].min, chart.xAxis[0].max, false);
         }
-
     },
 
-    _selectRegion: function(chart, xMin, xMax, featureType, save) {
+    _selectRegion: function(chart, xMinBox, xMaxBox, featureType, save, isAnswerDisplay) {
         /* Makes spindle and k-complex selection work */
         var that = this;
-        if (!this.vars.zoomActive) {
-            var color = this.vars.colors[featureType];
-            var selection_time = new Date().getMilliseconds();
-            var plotband_id = 'selection' + selection_time;
-            var xMinFixed = parseFloat(xMin).toFixed(2);
-            var xMaxFixed = parseFloat(xMax).toFixed(2);
 
-            var that = this;
-            chart.xAxis[0].addPlotBand({
-                from: xMin,
-                to: xMax,
-                color: color,
-                id: plotband_id,
-                events: {
-                    dblclick: function() {
+        // show expert annotations in a different colour
+        if (isAnswerDisplay) {
+            var color = this.vars.answer_colors[featureType];
+        } else {
+            var color = this.vars.colors[featureType];
+        }
+
+        var selection_time = new Date().getMilliseconds();
+        var plotband_id = selection_time + Math.random() * 100;
+        var xMinFixed = parseFloat(xMinBox).toFixed(2);
+        var xMaxFixed = parseFloat(xMaxBox).toFixed(2);
+        that.vars.active_plotbands.push(plotband_id) // keep list of all highlights on screen
+
+        var that = this;
+        chart.xAxis[0].addPlotBand({
+            from: xMinBox,
+            to: xMaxBox,
+            color: color,
+            id: plotband_id,
+            events: {
+                dblclick: function() {
+                    if (!isAnswerDisplay) {
                         chart.xAxis[0].removePlotBand(plotband_id)
-                            /* Meng: add custom code here to remove this feature from server */
-                        that._deleteFeature(that.vars.recording, xMinFixed, xMaxFixed, chart.renderTo.id);
+                        that._deleteFeature(that.options.recording, xMinFixed, xMaxFixed, chart.renderTo.id);
                     }
                 }
-            });
-            if (save) {
-                this._saveFeature(that.vars.recording, that.vars.feature_type, xMinFixed, xMaxFixed, chart.renderTo.id, 1.0);
             }
-
-            return false;
-        } else {
-            return true;
+        });
+        if (save) {
+            this._saveFeature(that.options.recording, that.vars.feature_type, xMinFixed, xMaxFixed, chart.renderTo.id, 1.0);
         }
     },
 
-    _getAnnotations: function(window_start, window_end) {
+    _getAnnotations: function(window_start, window_end, displaying_answer) {
         /* Get all of the past feature annotations and sleep stage classification for this window */
         var that = this;
-        $.getJSON('/viewer/getannotations/' + that.vars.recording + '/' + window_start + '/' + window_end + '/',
-            function(obj, status) {
-                for (var i = 0; i < obj.features.length; i++) {
-                    var feature = obj.features[i];
-                    var channel_name = feature.channel;
-                    var start_time = feature.start;
-                    var end_time = feature.end;
-                    var feature_type = feature.feature_type;
-                    var chart = $('#' + channel_name).highcharts();
 
-                    if (chart != undefined) {
-                        that._selectRegion(chart, start_time, end_time, feature_type, false);
-
-                        var classification = obj.classification;
-                        // windows will not necessarily have a past classification
-                        if (classification) {
-                            $('#' + classification).addClass('active');
-                            $('#' + classification).siblings().removeClass('active');
-                        } 
-                    }
-
+        $.ajax({
+            dataType: "json",
+            url: '/viewer/getannotations',
+            data: {
+                'recording_name': that.options.recording,
+                'window_start': window_start,
+                'window_end': window_end,
+                'displaying_answer': displaying_answer,
+            },
+            success: function(annotations, status) {
+                that._displayAnnotations(annotations, displaying_answer);
+                if (that.options.mturk_mode) {
+                    $('#nextWindow').prop('disabled', false);
                 }
+            },
+        });
+    },
+
+    _displayAnnotations: function(annotations, displaying_answer) {
+        /* show populate the window with the annotations from the db */
+        var that = this;
+        if (annotations.features.length === 0 && displaying_answer) {
+            // display a message stating that there are no annotations
+            if (!$('#notification').length) {
+                $('#notification_panel').append('<p id="notification">ANSWER: THIS WINDOW DOES NOT CONTAIN ANY SPINDLES</p>');
             }
-        );
+        }
+
+        for (var i = 0; i < annotations.features.length; i++) {
+            var feature = annotations.features[i];
+            var channel_name = feature.channel;
+            var start_time = feature.start;
+            var end_time = feature.end;
+            var feature_type = feature.feature_type;
+            var chart = $('#' + channel_name).highcharts();
+
+            if (chart != undefined) {
+                that._selectRegion(chart, start_time, end_time, feature_type, false, displaying_answer);
+            }
+        }
     },
 
     _saveFeature: function(recording, feature_type, start, end, channel, certainty_score) {
         /* Save the feature highlight to the database */
-        console.log('calling saveFeature');
         var that = this;
 
         $.post('/viewer/addfeature', {
@@ -322,15 +410,13 @@ $.widget('crowdspot.annotator', {
                 'certainty_score': certainty_score,
                 'recording_name': recording
             },
-            function(obj, status) {
-                console.log('saved feature');
-            }
+            function(obj, status) {}
         );
     },
 
     _deleteFeature: function(recording, time_start, time_end, channel) {
         /* remove the feature annotation from the database */
-        var that=this;
+        var that = this;
 
         $.post('/viewer/deletefeature', {
                 'time_start': time_start,
@@ -338,22 +424,7 @@ $.widget('crowdspot.annotator', {
                 'channel': channel,
                 'recording_name': recording,
             },
-            function(obj, status) {
-                console.log('deleted feature');
-            }
-
+            function(obj, status) {}
         );
     },
-
-    _getchartWidth: function() {
-        /* Set the width of the the chart, but limit it on widescreens to 
-        keep the data from getting overly stretched */
-        var WIDESCREEN_WIDTH = 1200;
-        var window_width = $(window).width();
-        if (window_width > WIDESCREEN_WIDTH) {
-            return WIDESCREEN_WIDTH;
-        } else {
-            return window_width - 70;
-        }
-    }
 });

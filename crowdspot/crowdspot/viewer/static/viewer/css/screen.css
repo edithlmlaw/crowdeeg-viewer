@@ -1,0 +1,132 @@
+td {
+  padding: 5px;
+}
+
+#classification_panel {
+  float: left;
+  display: inline;
+}
+
+#panel_container {
+  padding: 10px;
+}
+
+/* consent form css */
+@media (min-width: 500px) {
+  #panel_container {
+    width: 1150px;
+    margin: 0 auto;
+  }
+  #graph {
+    width: 1150px;
+    padding-bottom: 5px;
+  }
+  #information {
+    text-align: left;
+    width: 1125px;
+    margin-bottom: 5px;
+  }
+  #graph_control {
+    width: 1125px;
+    margin: 0 auto;
+    padding-bottom: 5px;
+  }
+}
+
+@media (min-width: 1200px) {
+  #panel_container {
+    width: 1000px;
+    margin: 0 auto;
+  }
+  #graph {
+    width: 1200px;
+  }
+  #information, #annotation_instructions {
+    text-align: left;
+    width: 1165px;
+    margin-bottom: 5px;
+  }
+  #graph_control {
+    width: 1175px;
+    margin: 0 auto;
+    padding-bottom: 5px;
+  }
+}
+
+#ex1Slider .slider-selection {
+  background: #BABABA;
+}
+
+#submit_buttons {
+  margin: 0 auto;
+  margin-top: 7px;
+  padding-bottom: 10px;
+}
+
+.panel-heading a:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e114";
+    color: grey;
+}
+.panel-heading a.collapsed:after {
+    content:"\e080";
+}
+
+#feature_panel {
+  float: left;
+  display: inline;
+}
+
+#navigation_panel {
+  float: right;
+  display: inline;
+}
+
+#notification {
+  display: inline;
+}
+
+#notification_panel {
+  margin: 0 auto;
+  display: inline;
+}
+
+#nextWindow {
+  background-color: rgba(86,186,219,.5);
+}
+
+#progress {
+  display: inline;
+  width: 150px; 
+  margin-top: 10px;
+}
+
+#progress_bar {
+  display: inline;
+  height: 50px;
+  width: 0%;
+}
+
+#nextWindow[disabled=disabled], #nextWindow:disabled {
+  background-color: #fff;   
+}
+
+#main_container {
+  padding: 10px;
+}
+
+#button_container {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 10px;
+}
+
+#zoom-button {
+  height: 34px;
+  margin-right: 20px;
+}
+
+.classification.active {
+  background-color: lightgrey;
+}
+

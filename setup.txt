@@ -17,24 +17,7 @@ Mechanical turk mode is served to all users of this site who are not superusers.
 
 User Accounts
 
-To create a superuser account, which will be served the expert view:
-
-run 
-
->>> python manage.py shell
->>> from django.contrib.auth.models import User
->>> user=User.objects.create_user('expert', password='crowdEEG')
->>> user.is_superuser=True
->>> user.save()
-
-To create a mechanical turk account, which will be served the expert view:
-
-run 
-
->>> python manage.py shell
->>> from django.contrib.auth.models import User
->>> user=User.objects.create_user('josh', password='crowdEEG')
->>> user.save()
+see crowdspot/crowdspot/create_user.py for all of your user account needs. If you don't want to use the annotation features, you can completely disable user accounts by removing @ensure_login wherever it appears.
 
 Next, run:
 
@@ -44,7 +27,7 @@ This will start a simple HTTP server that has some debugging utilities built in.
 
 now open a web browswer to: http://127.0.0.1:8000/viewer/
 
-If everything worked correctly (doubtful!), then you should see three EEG traces, labelled FP1-A1, C3-A1, O1-A1. You should also be able to highlight features on the EEG traces by clicking and dragging over the traces, and you should be able to delete these annotations by double clicking on them.
+If everything worked correctly (doubtful!), then you should see one EEG trace. You should also be able to highlight features on the EEG traces by clicking and dragging over the traces, and you should be able to delete these annotations by double clicking on them.
 
 Data
 

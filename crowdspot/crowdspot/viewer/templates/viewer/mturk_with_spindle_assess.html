@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}
+Sleep Spindle Task
+{% endblock title %}
+
+{% block local_script %}
+<script type="text/javascript" src="{% static 'viewer/js/eegdata.js' %}"></script>
+<script type="text/javascript" src="{% static 'viewer/js/annotator.js' %}"></script>
+<script type="text/javascript" src="{% static 'viewer/js/learning_task/spindle_assess_only.js' %}"></script>
+{% endblock local_script %}
+
+{% block interface %}
+<div id="main_container" align="center">
+  <div id="graph_container">
+    <nav id="graph_control">
+      <div id="button_container" class="container-fluid">
+        <div id="feature_panel" class="btn-group" role="group" aria-label="...">
+          <!-- Feature selection buttons inserted here by js -->
+        </div>
+        <div id="notification_panel">
+          <!-- Notifications -->
+        </div>
+        <div id="navigation_panel">
+          <div id="progress" class="nav navbar-text progress">
+              <div id="progress_bar" class="progress-bar progress-bar-info progress-bar-striped"></div>
+          </div>
+
+          <button type="button" class="btn btn-default" id="logout" aria-label="Left Align">Logout</button>
+        </div>
+      </div>
+    </nav>
+    <div id="graph"></div>
+
+    <div class="panel-group" id="information">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Spindle Criteria</h3>
+        </div>
+        <div class="panel-body">
+          <p>Using the sliders below record how well this spindle matches the criteria:</p>
+          <table>
+            <tr>
+              <td><b>Spindle Shape:</b></td>
+              <td>&nbsp;Shape does not match criteria</td>
+              <td><input id="shape-slider" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="5" data-slider-step="1" data-slider-value="10" data-slider-tooltip="hide"/></td>
+              <td> &nbsp; Shape matches criteria perfectly</td>
+            </tr>
+            <tr>
+              <td><b>Speed of Waves:</b></td>
+              <td>&nbsp;Waves spacing is too slow or too fast</td>
+              <td><input id="speed-slider" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="5" data-slider-step="1" data-slider-value="10" data-slider-tooltip="hide"/></td></td>
+              <td>&nbsp; Wave spacing meets criteria</td>
+            </tr>
+            <tr>
+              <td><b>Similarity to Examples:</b></td>
+              <td>&nbsp;Spindle resembles examples</td>
+              <td><input id="example-slider" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="5" data-slider-step="1" data-slider-value="10" data-slider-tooltip="hide"/></td></td>
+              <td>&nbsp;Spindle does not match examples</td>
+            </tr>
+          </table>
+          <br />
+          <button type="button" class="btn btn-default" id="logout" aria-label="Left Align">Submit Spindle</button>
+        </div>
+      </div>
+  
+      <div id="submit_buttons">
+        <button type='button' class='btn btn-default' id='noSpindles' aria-label='Left Align'>No Spindles</button>
+        <button type='button' class='btn btn-default' id='submit' aria-label='Left Align'>Submit Spindles</button>
+        <button type='button' class='btn btn-default' id='nextWindow' aria-label='Left Align'>
+        <span class='glyphicon glyphicon-step-forward' aria-hidden='true'></span>
+        </button>
+      </div>
+
+      <div class="panel panel-default" id="panel2">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a class="collapse-button" data-toggle="collapse" data-target="#collapseTwo" 
+              href="#collapseTwo">
+            How to Annotate Spindles
+            </a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse in">
+          <div class="panel-body">
+            Your task is to identify sleep spindles in the EEG signal above. To learn to spot spindles, see <b>How to Identify Spindles</b> below. <b> You must read the complete instructions at least once. </b> <br/><br/>
+            <b> To highlight spindles in the EEG signal above: </b>
+            <ol>
+              <li>Examine the window to determine if there are any sleep spindles. This is a real patient's EEG, so not all windows will have spindles. If you can't find any spindles, press "No Spindles". If there were any spindles that you missed, they will appear highlighted in grey.</li>
+              <li>Click and drag to draw a box around each spindle. Take care to make the box as tight as possible around the edges of the spindle.</li>
+              <li>If you misplace a box, delete it by double clicking on it.</li>
+              <li>Once you've highlighted all of the spindles on this window, press "Submit Spindles" to view the answer and move on to the next page. The answer will be shown in grey.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default" id="panel1">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-target="#identify_spindles" 
+              href="#identify_spindles">
+            How to Identify Spindles
+            </a>
+          </h4>
+        </div>
+        <div id="identify_spindles" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <p>A basic example of a sleep spindle is shown below. As you can see, sleep spindles are dense bundles of waves. Sleep spindles occur in the EEGs of patients who are sleeping.</p>
+            <img src="/static/viewer/img/basic_spindle.jpg" alt="Responsive image" />
+            <h5>Criteria for spotting a sleep spindle</h5>
+            <ol>
+              <li> <b>It is most important that the spindle stands out as being different from the surrounding EEG signal.</b></li>
+              <li><b>Spindle Shape</b></li>
+              <p>The spindle is usually shaped like a diamond or football, fattest in the middle and skinnier at the ends. Sometimes spindles are bent or tilted, this is ok. Some examples of spindle shape are shown below:</p>
+              <img src="/static/viewer/img/shape_example.jpg"  alt="Responsive image" /><br />
+              <li><b>Speed of waves</b></li>
+              <p>Sleep spindles appear as a burst of waves that are slightly faster than the waves around it. Examples are shown below. </p>
+              <img src="/static/viewer/img/speed_example.jpg"  alt="Responsive image" /><br />
+              <p>The first two examples are appropriate speeds for spindles. The third example is too slow, and the fourth example is too fast to be a sleep spindle. Notice that you can clearly see the gaps in the third example, while you can't see any gaps at all in the fourth example.</p>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default" id="panel3">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-target="#find_spindles" 
+              href="#find_spindles">
+            Examples
+            </a>
+          </h4>
+        </div>
+        <div id="find_spindles" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <img src="/static/viewer/img/examples1.jpg"  alt="Responsive image" /><br />
+            <img src="/static/viewer/img/examples2.jpg" alt="Responsive image" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel panel-default" id="panel3">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-target="#common_mistakes" 
+              href="#common_mistakes">
+            Common Mistakes
+            </a>
+          </h4>
+        </div>
+
+        <div id="common_mistakes" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <li>Sometimes there will be 2-5 windows in a row with no spindles, don't be afraid to press "No Spindles".</li>
+            <li>Spindles must visually stand out from the surrounding signal.</li>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock interface %}

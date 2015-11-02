@@ -1,7 +1,10 @@
 
 $( document ).ready(function() {
     $('#graph_container').annotator(
-        {channels: []});
+        {
+        	navigation_enabled: true,
+        	mturk_classification_mode: false,
+        });
 });
 
 
