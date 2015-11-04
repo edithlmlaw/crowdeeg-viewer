@@ -14,7 +14,7 @@ echo "create alias: db_migrate"
 echo "alias db_migrate='python $APP_PATH/manage.py migrate'" >> $HOME/.bashrc 
 
 echo "create alias: create_user"
-echo "alias create_user='python $APP_PATH/crowdspot/create_user.py user password'" >> $HOME/.bashrc 
+echo "alias create_user='python $APP_PATH/crowdspot/create_user.py -e user password'" >> $HOME/.bashrc 
 
 echo "create alias: server"
 echo "alias server='python $APP_PATH/manage.py runserver $PORT'" >> $HOME/.bashrc 
