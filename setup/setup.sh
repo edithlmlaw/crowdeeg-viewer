@@ -6,16 +6,6 @@ echo "updating ubuntu..."
 sudo apt-get update -y > /dev/null
 sudo apt-get install -y git zsh > /dev/null
 
-echo "Changing shell to ZSH"
-if [ ! -d "$HOME/.zprezto" ]; then
-	git clone --recursive https://github.com/sorin-ionescu/prezto.git $HOME/.zprezto > /dev/null
-	cd $HOME/.zprezto/runcoms
-	for rcfile in `ls *`; do ln -s $HOME/.zprezto/runcoms/$rcfile $HOME/.$rcfile; done > /dev/null
-	echo "vagrant" | chsh -s /usr/bin/zsh
-	echo "add zsh modules"
-	sed -i "s/'prompt'/'prompt' 'git'/" ~/.zpreztorc
-fi
-
 if [ ! -d "$HOME/anaconda/" ]
 then
 	echo "downloading conda..."
