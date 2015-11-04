@@ -14,8 +14,8 @@ then
 	echo "installing conda..."
 	sudo chmod +x $CONDA
 	$CONDA -b -p $HOME/anaconda > /dev/null
-	echo "export PATH='$HOME/anaconda/bin:$PATH'" > $HOME/.zshrc
-	. ~/.zshrc
+	echo "export PATH='$HOME/anaconda/bin:$PATH'" > $HOME/.bashrc
+	. ~/.bashrc
 
 	echo "installing numpy..."
 	conda install numpy -y > /dev/null
