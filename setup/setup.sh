@@ -4,7 +4,6 @@ CONDA=$HOME/$CONDA_VERSION
 
 echo "updating ubuntu..."
 sudo apt-get update -y > /dev/null
-sudo apt-get install -y git zsh > /dev/null
 
 if [ ! -d "$HOME/anaconda/" ]
 then

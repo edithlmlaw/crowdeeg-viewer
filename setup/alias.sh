@@ -5,7 +5,7 @@ HOME=/home/vagrant
 SHARED=/vagrant
 PORT=0.0.0.0:8000
 
-APP_PATH=$SHARED/crowdeeg-viewer/crowdspot
+APP_PATH=$SHARED/crowdspot
 
 echo "create alias: db_login"
 echo "alias db_login='PGUSER=$APP_DB_USER PGPASSWORD=$APP_DB_PASS psql -h localhost $APP_DB_NAME'" >> $HOME/.bashrc
