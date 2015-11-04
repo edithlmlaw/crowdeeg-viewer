@@ -7,7 +7,7 @@ ROOT_URLCONF = PROJECT_NAME + '.urls'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = ''
+SECRET_KEY = 'changethissecretkey'
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -19,7 +19,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'eeg',
         'USER': 'joshbradshaw',
-        'PASSWORD': '',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '5432',
     }

@@ -11,3 +11,24 @@ At the moment the primary developer on this project is Josh Bradshaw (http://jos
 ## Mechanical Turk Interface
 
 ![Mechanical Turk Interface](http://i.imgur.com/BKKaq1g.png)
+
+## Vagrant Setup
+
+[Download Vagrant](https://www.vagrantup.com/downloads.html)
+
+In the root directory run the following commands:
+
+```
+vagrant up
+#this will take a while...
+
+vagrant ssh
+
+db_migrate
+
+create_user
+
+server
+```
+
+In your browser, visit http://localhost:8080.
