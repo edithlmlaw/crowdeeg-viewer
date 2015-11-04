@@ -7,7 +7,7 @@ sudo apt-get update -y > /dev/null
 sudo apt-get install -y git zsh > /dev/null
 
 echo "Changing shell to ZSH"
-if [ ! -f "$HOME/.zprezto" ]; then
+if [ ! -d "$HOME/.zprezto" ]; then
 	git clone --recursive https://github.com/sorin-ionescu/prezto.git $HOME/.zprezto > /dev/null
 	cd $HOME/.zprezto/runcoms
 	for rcfile in `ls *`; do ln -s $HOME/.zprezto/runcoms/$rcfile $HOME/.$rcfile; done > /dev/null
@@ -24,8 +24,8 @@ then
 	echo "installing conda..."
 	sudo chmod +x $CONDA
 	$CONDA -b -p $HOME/anaconda > /dev/null
-	echo "export PATH='$HOME/anaconda/bin:$PATH'" > $HOME/.bashrc
-	. ~/.bashrc
+	echo "export PATH='$HOME/anaconda/bin:$PATH'" > $HOME/.zshrc
+	. ~/.zshrc
 
 	echo "installing numpy..."
 	conda install numpy -y > /dev/null
